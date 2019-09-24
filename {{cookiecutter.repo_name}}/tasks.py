@@ -24,7 +24,7 @@ from invoke import Collection, task
 def clean_docs(ctx):
     """Cleans up the docs"""
     print('Cleaning the docs')
-    ctx.run("rm -rf docs/sphinx/_build")
+    ctx.run('rm -rf docs/sphinx/_build')
 
 
 @task
@@ -33,11 +33,11 @@ def build_docs(ctx, clean=False):
 
     if clean:
         print('Cleaning the docs')
-        ctx.run("rm -rf docs/sphinx/_build")
+        ctx.run('rm -rf docs/sphinx/_build')
 
     print('Building the docs')
     os.chdir('docs/sphinx')
-    ctx.run("make html", pty=True)
+    ctx.run('make html', pty=True)
 
 
 @task
@@ -60,10 +60,10 @@ def clean(ctx):
     ctx.run('rm -rf python/*.egg-info')
 
 
-@task(clean)
+@task(clean, default=True)
 def deploy(ctx):
-    """Deploy the project to pypi"""
-    print('Deploying to Pypi!')
+    """Deploy the project to PyPI"""
+    print('Deploying to PyPI!')
     ctx.run('python setup.py sdist bdist_wheel --universal')
     ctx.run('twine upload dist/*')
 
@@ -76,50 +76,10 @@ def deploy_test(ctx):
     ctx.run('twine upload --repository-url https://test.pypi.org/legacy/ dist/*')
 
 
-@task(name='install-deps')
-def install_deps(ctx, extras=None):
-    """Install only dependencies from setup.cfg."""
-
-    import setuptools
-
-    if not os.path.exists('setup.cfg'):
-        raise RuntimeError('setup.cfg cannot be found. If your project uses '
-                           'requirement files use pip install -r instead.')
-
-    if extras:
-        extras = extras.split(',')
-    else:
-        extras = []
-
-    config = setuptools.config.read_configuration('setup.cfg')
-
-    if not config['options']:
-        return
-
-    options = config['options']
-
-    setup_requires = options.get('setup_requires', [])
-    install_requires = options.get('install_requires', [])
-
-    requires = setup_requires + install_requires
-    requires_str = (' '.join('"' + item + '"' for item in requires))
-    if len(requires) > 0:
-        ctx.run(f'pip install --upgrade {requires_str}', pty=True)
-
-    for extra in extras:
-        print(f'Installing extras={extra}')
-        if 'extras_require' not in options:
-            raise RuntimeError('extras_require is not defined')
-        extra_deps = options['extras_require'].get(extra, [])
-        if len(extra_deps) > 0:
-            extra_deps_str = (' '.join('"' + item + '"' for item in extra_deps))
-            ctx.run(f'pip install --upgrade {extra_deps_str}', pty=True)
-
-
 os.chdir(os.path.dirname(__file__))
 
 # create a collection of tasks
-ns = Collection(clean, install_deps)
+ns = Collection(clean)
 
 # create a sub-collection for the doc tasks
 docs = Collection('docs')
@@ -127,3 +87,8 @@ docs.add_task(build_docs, 'build')
 docs.add_task(clean_docs, 'clean')
 docs.add_task(show_docs, 'show')
 ns.add_collection(docs)
+
+deploy_task = Collection('deploy')
+deploy_task.add_task(deploy, 'pypi')
+deploy_task.add_task(deploy_test, 'test')
+ns.add_collection(deploy_task)
