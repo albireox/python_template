@@ -40,6 +40,8 @@ To test install the cookiecutter package locally, run:
 
 It is good practice to test install the package locally before you commit any changes to ensure the package can properly install without error.
 
+While we tag significant changes to the product, given that the coockiecutter runs from a branch, we consider `master` the stable branch. All development must happen in the [develop](https://github.com/sdss/python_template/tree/develop) branch, which will only be merged to master after rigorous testing.
+
 ## What you get in this template
 
 * Python 2/3 compatibility
