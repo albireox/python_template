@@ -68,12 +68,6 @@ def deploy(ctx):
     ctx.run('twine upload dist/*')
 
 
-<<<<<<< HEAD
-os.chdir(os.path.dirname(__file__))
-
-# create a collection of tasks
-ns = Collection(clean, deploy)
-=======
 @task(clean)
 def deploy_test(ctx):
     """Deploy the project to the test version of  PyPI"""
@@ -126,7 +120,6 @@ os.chdir(os.path.dirname(__file__))
 
 # create a collection of tasks
 ns = Collection(clean, install_deps)
->>>>>>> 3ca2ee3... Add task to install dependencies from setup.cfg
 
 # create a sub-collection for the doc tasks
 docs = Collection('docs')
