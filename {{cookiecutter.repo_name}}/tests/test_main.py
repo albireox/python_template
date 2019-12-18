@@ -10,7 +10,7 @@ from __future__ import unicode_literals
 
 from pytest import mark
 
-from {{cookiecutter.package_name}}.main import math
+from {{cookiecutter.repo_name}}.main import math
 
 
 class TestMath(object):

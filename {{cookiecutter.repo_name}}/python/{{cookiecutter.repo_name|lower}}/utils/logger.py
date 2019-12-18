@@ -1,13 +1,12 @@
-# encoding: utf-8
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
-# @Author: José Sánchez-Gallego
-# @Date: Oct 11, 2017
+# @Author: José Sánchez-Gallego (gallegoj@uw.edu)
+# @Date: 2017-10-11
 # @Filename: logger.py
-# @License: BSD 3-Clause
-# @Copyright: José Sánchez-Gallego
+# @License: BSD 3-clause (http://www.opensource.org/licenses/BSD-3-Clause)
 
 import copy
-import datetime
 import logging
 import os
 import re
@@ -51,6 +50,8 @@ def colored_formatter(record):
         levelname_color = colours[levelname]
         header = color_text('[{}]: '.format(levelname.upper()),
                             levelname_color)
+    else:
+        header = f'[{levelname}]'
 
     message = record.getMessage()
 
@@ -58,6 +59,11 @@ def colored_formatter(record):
         warning_category_groups = re.match(r'^.*?\s*?(\w*?Warning): (.*)', message)
         if warning_category_groups is not None:
             warning_category, warning_text = warning_category_groups.groups()
+
+            # Temporary ignore warnings from pymodbus. The normal warnings.simplefilter
+            # does not work because pymodbus forces them to show.
+            if re.match('"@coroutine" decorator is deprecated.+', warning_text):
+                return
 
             warning_category_colour = color_text('({})'.format(warning_category), 'cyan')
             message = '{} {}'.format(color_text(warning_text, ''), warning_category_colour)
@@ -113,6 +119,9 @@ class SDSSLogger(logging.Logger):
     """
 
     def __init__(self, name):
+
+        # Placeholder for the last error-level message emitted.
+        self._last_error = None
 
         super(SDSSLogger, self).__init__(name)
 
@@ -179,10 +188,6 @@ class SDSSLogger(logging.Logger):
             if not os.path.exists(logdir):
                 os.makedirs(logdir)
 
-            if os.path.exists(log_file_path):
-                strtime = datetime.datetime.utcnow().strftime('%Y-%m-%d_%H:%M:%S')
-                shutil.move(log_file_path, log_file_path + '.' + strtime)
-
             self.fh = TimedRotatingFileHandler(
                 str(log_file_path), when='midnight', utc=True)
 
@@ -204,6 +209,19 @@ class SDSSLogger(logging.Logger):
                 self.warnings_logger.addHandler(self.fh)
 
             self.log_filename = log_file_path
+
+    def handle(self, record):
+        """Handles a record but first stores it."""
+
+        if record.levelno == logging.ERROR:
+            self._last_error = record.getMessage()
+
+        return super().handle(record)
+
+    def get_last_error(self):
+        """Returns the last error emitted."""
+
+        return self._last_error
 
     def set_level(self, level):
         """Sets levels for both sh and (if initialised) fh."""

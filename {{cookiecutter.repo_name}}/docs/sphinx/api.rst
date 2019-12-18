@@ -1,7 +1,7 @@
 
 .. _api:
 
-{{cookiecutter.package_name}} Reference
+{{cookiecutter.repo_name}} Reference
 =========================
 
 .. _api-main:
@@ -9,7 +9,7 @@
 Main
 ----
 
-.. automodule:: {{cookiecutter.package_name}}.main
+.. automodule:: {{cookiecutter.repo_name}}.main
    :members:
    :undoc-members:
    :show-inheritance:

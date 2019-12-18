@@ -1,7 +1,7 @@
 
 .. _intro:
 
-Introduction to {{cookiecutter.package_name}}
-===============================
+Introduction
+============
 
 We should write an introduction here.

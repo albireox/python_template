@@ -14,9 +14,9 @@ from invoke.exceptions import UnexpectedExit
 #
 #
 
-GITUSER = '{{ cookiecutter.github_username }}'
+GITUSER = '{{ cookiecutter.github_organisation }}'
 REPONAME = '{{ cookiecutter.repo_name }}'
-PKGNAME = '{{ cookiecutter.package_name }}'
+PKGNAME = '{{ cookiecutter.repo_name }}'
 
 CURRENTDIR = os.path.abspath(os.curdir)
 PYTHONDIR = os.path.join(CURRENTDIR, 'python')
@@ -81,4 +81,3 @@ if exists_github in ['yes', 'y']:
 
 
 print('Please add {0} into your PYTHONPATH!'.format(PYTHONDIR))
-

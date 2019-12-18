@@ -1,16 +1,4 @@
 # encoding: utf-8
-#
-# @Author: José Sánchez-Gallego
-# @Date: Oct 12, 2017
-# @Filename: main.py
-# @License: BSD 3-Clause
-# @Copyright: José Sánchez-Gallego
-
-
-from __future__ import division
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 import operator
 
@@ -64,7 +52,7 @@ class MyClass(object):
             A keyword argument.
 
     Attributes:
-        name (str): A description of what names gives acces to.
+        name (str): A description of what names gives access to.
 
     """
 
